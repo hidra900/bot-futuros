@@ -1,0 +1,10 @@
+
+
+PERIOD = '15m'
+CRIPTO = 'MATIC'
+REF = 'USDT'
+SIDE = 'LONG'
+LEVERAGE = 5
+SMA_F = 10
+SMA_S = 55 
+CAPITAL = 1
