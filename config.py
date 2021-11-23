@@ -2,5 +2,5 @@ import datetime as dt
 
 
 
-api_key='Jsbh92fEL2LyRKhIf4rAmlgHxwUWnhCI7kKEEePpcS8AOa7rPbRLQtKStm7muRQu'
-secret_key='CS2LQw5QjgikurnY9Xh4R9J5Lkz4Shdvx2fqTkPfAmWONSOZI5g6WDySnCmhRsUk'
+api_key=''
+secret_key=''
