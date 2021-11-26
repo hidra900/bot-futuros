@@ -193,11 +193,10 @@ for ind, val in enumerate(df['value']):
   colors.append(color)
   
 # add 2 subplots: 1. bars, 2. crosses
-apds = [mpf.make_addplot(df['value'], panel=1, type='bar', color=colors, alpha=0.8, secondary_y=False),
-        mpf.make_addplot([0] * len(df), panel=1, type='scatter', marker='x', markersize=50, color=['gray' if s else 'black' for s in df['squeeze_off']], secondary_y=False)]
+#apds = [mpf.make_addplot(df['value'], panel=1, type='bar', color=colors, alpha=0.8, secondary_y=False),
+#        mpf.make_addplot([0] * len(df), panel=1, type='scatter', marker='x', markersize=50, color=['gray' if s else 'black' for s in df['squeeze_off']], secondary_y=False)]
 
-
-#plot ohcl with subplots
+# #plot ohcl with subplots
 # fig, axes = mpf.plot(ohcl, 
 #               volume_panel = 2,
 #               figratio=(2,1),
@@ -248,7 +247,8 @@ signal['position-rsi-c'] = signal['signal-rsi-c'].diff()
 signal['signal-rsi-v'] = np.where(df.RSI.values > 70,-1,0)
 signal['position-rsi-v'] = signal['signal-rsi-v'].diff()
 
-
+signal['signal-squeeze'] = np.where(df['value'] < 0,1,0)
+signal['signal-squeeze-c'] = signal['signal-squeeze'].diff()
 
 
 
@@ -316,9 +316,15 @@ ax[0].set_ylabel('precio')
 ax[0].grid(True)
 
 
-ax[1].plot(df.index, macd, 'b', label="MACD")
-ax[1].plot(df.index, ema9, 'r--', label="Signal")
-ax[1].bar(df.index, histograma, color=(histograma>0).map({True:'g', False:'r'}))
+# ax[1].plot(df.index, macd, 'b', label="MACD")
+# ax[1].plot(df.index, ema9, 'r--', label="Signal")
+# ax[1].bar(df.index, histograma, color=(histograma>0).map({True:'g', False:'r'}))
+# ax[1].grid(True)
+
+
+#ax[1].plot(df.index, macd, 'b', label="MACD")
+ax[1].plot(df['value'][signal['signal-squeeze-c'] < 0], '^', markersize=9, color='b')
+ax[1].bar(df.index, df['value'], color=(df['value']>0).map({True:'g', False:'r'}))
 ax[1].grid(True)
 
 ax[2].plot(df.RSI)
