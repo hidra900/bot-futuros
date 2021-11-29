@@ -100,7 +100,7 @@ df[df.start>=dt.datetime.strptime('10/29/21','%m/%d/%y')]
 df = df[df.start>=dt.datetime.strptime('10/29/21','%m/%d/%y')]
 # print(df_temp)
 #df.set_index('start',inplace=True)
-print(df)
+
 df['close'].rolling(window=10,min_periods=1).mean()
 
 df['diff']=df.close.diff(periods=1)
@@ -289,7 +289,7 @@ fig, ax = plt.subplots(3,1,sharex=True,gridspec_kw={'height_ratios': [2.5, 1,1]}
 ax[0].bar(df.index.values, df['diff'], width=0.9, bottom=df.open, color=df.DIFF.map({True:'g', False:'r'}))
 ax[0].bar(df.index.values, df['diffh'], width=0.3,bottom=df.open,color=df.DIFF.map({True:'g', False:'r'}))
 ax[0].bar(df.index.values, df['diffl'], width=0.3,bottom=df.open,color=df['DIFF'].map({True:'g', False:'r'}))
-ax[0].plot(df.low[signal['position']== 1], '^', markersize=9, color='b')
+ax[0].plot(df.close[signal['position']== 1], '^', markersize=9, color='b')
 ax[0].plot(df.close[signal['position']== -1], 'v', markersize=9, color='k')
 ax[0].plot(df.media_close_10,'b')
 ax[0].plot(df.media_close_55,'orange')
