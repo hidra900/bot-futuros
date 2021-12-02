@@ -86,9 +86,9 @@ def Calculate_Qty(price, money, minQty, maxQty, maxDeciamlQty):
 
 #======= indicadores =========
 client = RequestClient(api_key=api_key, secret_key=secret_key)
-#df = client.get_candlestick_data(symbol='MATICUSDT', interval='15m', limit=1000)
-df = pd.read_csv('matic_15m_1mes.csv')
-#df = Parse_data(df,1000)
+df = client.get_candlestick_data(symbol='MATICUSDT', interval='15m', limit=200)
+#df = pd.read_csv('matic_15m_1mes.csv')
+df = Parse_data(df,200)
 
 
 #df.index =  pd.to_datetime(df.index)
@@ -213,6 +213,36 @@ for ind, val in enumerate(df['value']):
 #               type='candle', 
 #               addplot=apds,
 #               returnfig=True)
+df = df.dropna()
+
+
+min = []
+max = []
+minimovalor = 0
+
+
+
+for i in df['value']:
+    if i < 0:
+
+        if i < i+1:
+            minimo = i
+        else:
+            minimo = i+1
+
+        minimovalor = minimo
+
+        if i+1 > 0  and minimovalor != "":
+            min.append(minimovalor)    
+            minimovalor = 0; 
+
+#print(minimovalor)
+
+
+
+
+
+
 
 # #################################################################
 
@@ -245,11 +275,10 @@ histograma = macd - ema9
 
 
 signal = pd.DataFrame(index=df.index)
-#if df.RSI == '30' :
+
 
 signal['signal'] = np.where(df.media_close_10 < df.media_close_55,1,0)
 signal['position'] = signal['signal'].diff()
-
 
 
 signal['signal-rsi-c'] = np.where(df.RSI.values < 30,1,0)
@@ -261,12 +290,10 @@ signal['signal-squeeze'] = np.where(df['value'] > 0,1,0)
 signal['signal-squeeze-c'] = signal['signal-squeeze'].diff()
 
 
-# for i in df['value']:
-#     if i < 0:
-#         print(i)
+
 # #################################################################
 
-capital = 10
+capital = 1000
 stocks = int(10)
 
 positions = stocks*signal['signal']
@@ -277,44 +304,56 @@ pos_diff = positions.diff()
 cash = capital - (pos_diff.multiply(df.close).cumsum())
 total = cash + portfolio
 
+
 returns = total.pct_change()[1:]
 returns = returns[returns != 0]
 
-print("\n Valor total bruto de la cartera al final del periodo:", round(total.iloc[-1] ,2))
+#print("\n Valor total bruto de la cartera al final del periodo:", round(total.iloc[-1] ,2))
 
 
 
-fig, ax = plt.subplots(3,1,sharex=True,gridspec_kw={'height_ratios': [2.5, 1,1]}, figsize=(16,8))
-#plt.figure(figsize=(20,10))
-ax[0].bar(df.index.values, df['diff'], width=0.9, bottom=df.open, color=df.DIFF.map({True:'g', False:'r'}))
-ax[0].bar(df.index.values, df['diffh'], width=0.3,bottom=df.open,color=df.DIFF.map({True:'g', False:'r'}))
-ax[0].bar(df.index.values, df['diffl'], width=0.3,bottom=df.open,color=df['DIFF'].map({True:'g', False:'r'}))
-ax[0].plot(df.close[signal['position']== 1], '^', markersize=9, color='b')
-ax[0].plot(df.close[signal['position']== -1], 'v', markersize=9, color='k')
-ax[0].plot(df.media_close_10,'b')
-ax[0].plot(df.media_close_55,'orange')
-ax[0].plot(df.media_close_200,'p')
-ax[0].set_title('MATICUSDT')
-ax[0].set_ylabel('precio')
-ax[0].grid(True)
+# fig, ax = plt.subplots(3,1,sharex=True,gridspec_kw={'height_ratios': [2.5, 1,1]}, figsize=(16,8))
+# #plt.figure(figsize=(20,10))
+# ax[0].bar(df.index.values, df['diff'], width=0.9, bottom=df.open, color=df.DIFF.map({True:'g', False:'r'}))
+# ax[0].bar(df.index.values, df['diffh'], width=0.3,bottom=df.open,color=df.DIFF.map({True:'g', False:'r'}))
+# ax[0].bar(df.index.values, df['diffl'], width=0.3,bottom=df.open,color=df['DIFF'].map({True:'g', False:'r'}))
+# ax[0].plot(df.close[signal['position']== 1], '^', markersize=9, color='b')
+# ax[0].plot(df.close[signal['position']== -1], 'v', markersize=9, color='k')
+# ax[0].plot(df.media_close_10,'b')
+# ax[0].plot(df.media_close_55,'orange')
+# ax[0].plot(df.media_close_200,'p')
+# ax[0].set_title('MATICUSDT')
+# ax[0].set_ylabel('precio')
+# ax[0].grid(True)
 
 
-# ax[1].plot(df.index, macd, 'b', label="MACD")
-# ax[1].plot(df.index, ema9, 'r--', label="Signal")
-# ax[1].bar(df.index, histograma, color=(histograma>0).map({True:'g', False:'r'}))
+# # ax[1].plot(df.index, macd, 'b', label="MACD")
+# # ax[1].plot(df.index, ema9, 'r--', label="Signal")
+# # ax[1].bar(df.index, histograma, color=(histograma>0).map({True:'g', False:'r'}))
+# # ax[1].grid(True)
+
+
+# #ax[1].plot(df.index, macd, 'b', label="MACD")
+# # ax[1].plot(df['value'][signal['signal-squeeze-c'] < 0], '^', markersize=9, color='b')
+# ax[1].bar(df.index, df['value'], color=(df['value'] > 0).map({True:'g', False:'r'}))
 # ax[1].grid(True)
 
+# ax[2].plot(df.RSI)
+# ax[2].plot(df.index,70*np.ones(df.shape[0]),'r')
+# ax[2].plot(df.index,30*np.ones(df.shape[0]),'g')
+# ax[2].plot(df.RSI[signal['position-rsi-c']== 1], '^', markersize=9, color='b')
+# ax[2].plot(df.RSI[signal['position-rsi-v']== -1], 'v', markersize=9, color='k')
+# ax[2].set_title('RSI_14')
+# plt.show()
 
-#ax[1].plot(df.index, macd, 'b', label="MACD")
-# ax[1].plot(df['value'][signal['signal-squeeze-c'] < 0], '^', markersize=9, color='b')
-ax[1].bar(df.index, df['value'], color=(df['value'] > 0).map({True:'g', False:'r'}))
-ax[1].grid(True)
-
-ax[2].plot(df.RSI)
-ax[2].plot(df.index,70*np.ones(df.shape[0]),'r')
-ax[2].plot(df.index,30*np.ones(df.shape[0]),'g')
-ax[2].plot(df.RSI[signal['position-rsi-c']== 1], '^', markersize=9, color='b')
-ax[2].plot(df.RSI[signal['position-rsi-v']== -1], 'v', markersize=9, color='k')
-ax[2].set_title('RSI_14')
-plt.show()
-
+# prev_df = list()
+# for candlestick in res:
+#   row = dict()
+#   row['close'] = candlestick.close
+#   row['closeTime'] = candlestick.closeTime
+#   row['high'] = candlestick.high
+#   row['low'] = candlestick.low
+#   row['open'] = candlestick.open
+#   row['openTime'] = candlestick.openTime
+#   row['volume'] = candlestick.volume
+#   prev_df.append(row)
