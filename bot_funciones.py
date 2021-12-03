@@ -215,31 +215,45 @@ for ind, val in enumerate(df['value']):
 #               returnfig=True)
 df = df.dropna()
 
+def minimosLocalesNegativos(arr):
+# lista para almacenar los minimos locales
+    minLocal = []
+# Chequemos si el primer elemento es un minimo local
+    if arr[0] < 0 and arr[0] < arr[1]:
+        minLocal.append(0)
+       
+# iterando sobre todos los siguientes elementos, excepto el último.
+    for i in range(1, len(arr) - 1):
+        if (arr[i-1] > arr[i] <= arr[i + 1]) and (arr[i] < 0):
+            minLocal.append(arr[i])
+# Chequemos si el ultimo elemento es un minimo local
+        if (arr[-1] < arr[-2]) and arr[-1] < 0:
+            minLocal.append(arr[-1])
+# el output es una lista con los mínimos locales
+    return minLocal
+df1 = [0.1, 0.2, 0.5, 0.6, -0.15, -0.945, -0.945, -0.3, 0.1, 0.3, 0.4, 0.5, -0.14, -0.82, -0.95, -0.87, 0.1, 0.3, 0.4, 0.5, -0.16, -0.62, -0.54, -0.15]
 
-min = []
-max = []
-minimovalor = 0
+print(minimosLocalesNegativos(df1))
+
+# minimo = []
+# for i in df['value']:
+#     minimo.append(i)
+# print(minimosLocalesNegativos(minimo))
 
 
+# print(minimo)
+# print(minimosLocalesNegativos(minimo1))
 
-for i in df['value']:
-    if i < 0:
-
-        if i < i+1:
-            minimo = i
-        else:
-            minimo = i+1
-
-        minimovalor = minimo
-
-        if i+1 > 0  and minimovalor != "":
-            min.append(minimovalor)    
-            minimovalor = 0; 
-
-#print(minimovalor)
-
-
-
+#Si lo que buscas son los índices solo hay que reemplazar los append(arr[i]) por append(i)
+# minimo = []
+# maximo = []
+# for i in df['value']:
+#     if i < 0:
+#         minimo.append(i)
+#     continue
+#     if i > 0:
+#         break
+# print(minimo)
 
 
 
